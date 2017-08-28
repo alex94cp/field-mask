@@ -48,6 +48,22 @@ describe('FieldMask', () => {
 		});
 	});
 
+	describe('get', () => {
+		it('returns object with all included fields set to 1 from include mask', function () {
+			const result = FieldMask.from({ foo: 1, bar: 1, baz: 1 }).get();
+			expect(result).to.have.property('foo', 1);
+			expect(result).to.have.property('bar', 1);
+			expect(result).to.have.property('baz', 1);
+		});
+
+		it('returns object with all included fields set to 0 from exclude mask', function () {
+			const result = FieldMask.from({ foo: 0, bar: 0, baz: 0 }).get();
+			expect(result).to.have.property('foo', 0);
+			expect(result).to.have.property('bar', 0);
+			expect(result).to.have.property('baz', 0);
+		});
+	});
+
 	describe('negate', () => {
 		it('returns exclude mask from include mask', function () {
 			const source = FieldMask.from({ foo: 1 });

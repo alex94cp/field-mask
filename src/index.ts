@@ -30,6 +30,13 @@ export class FieldMask<K extends string> {
 		return this;
 	}
 
+	get(): Record<K, 0 | 1> {
+		return this._entries.reduce((result, f) => {
+			result[f] = this.type;
+			return result;
+		}, {} as Record<K, 0 | 1>);
+	}
+
 	includes(field: K): boolean | undefined {
 		switch (this.type) {
 			case FieldMaskType.Exclude:
