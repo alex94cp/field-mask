@@ -1,0 +1,41 @@
+{
+  "name": "field-mask",
+  "version": "1.0.0",
+  "description": "Object field mask handling.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "coverage": "nyc report -r json && codecov -f coverage/*.json",
+    "prepare": "npm run build",
+    "pretest": "npm run build",
+    "test": "nyc -r text -r html mocha --require source-map-support/register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex94puchades/field-mask.git"
+  },
+  "keywords": [
+    "field",
+    "mask",
+    "object",
+    "property"
+  ],
+  "author": "Alex Puchades <alex94puchades+dev@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/alex94puchades/field-mask/issues"
+  },
+  "homepage": "https://github.com/alex94puchades/field-mask#readme",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "codecov": "^2.3.0",
+    "mocha": "^3.5.0",
+    "nyc": "^11.1.0",
+    "source-map-support": "^0.4.16",
+    "typescript": "^2.4.2"
+  },
+  "dependencies": {
+    "@types/node": "^8.0.25",
+    "core-js": "^2.5.0"
+  }
+}
