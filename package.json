@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Object field mask handling.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "coverage": "nyc report -r json && codecov -f coverage/*.json",
