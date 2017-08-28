@@ -4,12 +4,27 @@ const {FieldMask, FieldMaskType} = require('./');
 
 describe('FieldMask', () => {
 	describe('from', () => {
-		it('returns include mask if all object values are truthy', function () {
+		it('returns field mask from field mask instance', function () {
+			const source = new FieldMask;
+			source.add('foo', 'bar', 'baz');
+			const result = FieldMask.from(source);
+			expect(result).to.equal(source);
+		});
+
+		it('returns include mask with all fields from array', function () {
+			const mask = FieldMask.from(['foo', 'bar', 'baz']);
+			expect(mask.type).to.equal(FieldMaskType.Include);
+			expect(mask.includes('foo')).to.be.true;
+			expect(mask.includes('bar')).to.be.true;
+			expect(mask.includes('baz')).to.be.true;
+		});
+
+		it('returns include mask from object if all values are truthy', function () {
 			const mask = FieldMask.from({ foo: 1 });
 			expect(mask.type).to.equal(FieldMaskType.Include);
 		});
 
-		it('returns exclude mask if all object values are falsey', function () {
+		it('returns exclude mask from object if all values are falsey', function () {
 			const mask = FieldMask.from({ foo: 0 });
 			expect(mask.type).to.equal(FieldMaskType.Exclude);
 		});
