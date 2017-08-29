@@ -85,7 +85,7 @@ export class FieldMask<K extends string> {
 		}
 	}
 
-	intersect(otherFrom: FieldMask<K>): FieldMask<K> {
+	intersect(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
 		const other = FieldMask.from(otherFrom);
 		switch (this.type) {
 			case FieldMaskType.Exclude:
