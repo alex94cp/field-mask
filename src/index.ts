@@ -10,11 +10,11 @@ export class FieldMask<K extends string> {
 	constructor(public type =  FieldMaskType.Include) {
 	}
 
-	static from<T extends string>(from: FieldMaskFrom<T>): FieldMask<string> {
+	static from<T extends string>(from: FieldMaskFrom<T>): FieldMask<T> {
 		if (from instanceof FieldMask) {
 			return from;
 		} else if (Array.isArray(from)) {
-			const mask = new FieldMask;
+			const mask = new FieldMask<T>();
 			mask.add(...from);
 			return mask;
 		} else {
@@ -27,8 +27,8 @@ export class FieldMask<K extends string> {
 			}
 			if (maskType === undefined)
 				maskType = FieldMaskType.Include;
-			const mask = new FieldMask(maskType);
-			mask.add(...Object.keys(from));
+			const mask = new FieldMask<T>(maskType);
+			mask.add(...Object.keys(from) as T[]);
 			return mask;
 		}
 	}
@@ -69,7 +69,8 @@ export class FieldMask<K extends string> {
 		}
 	}
 
-	join(other: FieldMask<K>): FieldMask<K> {
+	join(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
+		const other = FieldMask.from<K>(otherFrom);
 		switch (this.type) {
 			case FieldMaskType.Exclude:
 				const excludeMask = new FieldMask<K>(FieldMaskType.Exclude);
@@ -84,7 +85,8 @@ export class FieldMask<K extends string> {
 		}
 	}
 
-	intersect(other: FieldMask<K>): FieldMask<K> {
+	intersect(otherFrom: FieldMask<K>): FieldMask<K> {
+		const other = FieldMask.from(otherFrom);
 		switch (this.type) {
 			case FieldMaskType.Exclude:
 				const excludeMask = new FieldMask<K>(FieldMaskType.Exclude);

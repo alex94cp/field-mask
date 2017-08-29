@@ -97,18 +97,16 @@ describe('FieldMask', () => {
 
 	describe('join', () => {
 		it('returns include mask from include mask and include mask', function () {
-			const left = FieldMask.from({ foo: 1 });
-			const right = FieldMask.from({ bar: 1 });
-			const result = left.join(right);
+			const mask = FieldMask.from({ foo: 1 });
+			const result = mask.join({ bar: 1 });
 			expect(result.type).to.equal(FieldMaskType.Include);
 			expect(result).to.satisfy(r => r.includes('foo'));
 			expect(result).to.satisfy(r => r.includes('bar'));
 		});
 
 		it('returns include mask from include mask and exclude mask', function () {
-			const left = FieldMask.from({ foo: 1, bar: 1 });
-			const right = FieldMask.from({ bar: 0, baz: 0 });
-			const result = left.join(right);
+			const mask = FieldMask.from({ foo: 1, bar: 1 });
+			const result = mask.join({ bar: 0, baz: 0 });
 			expect(result.type).to.equal(FieldMaskType.Include);
 			expect(result).to.satisfy(r => r.includes('foo'));
 			expect(result).to.satisfy(r => r.includes('bar'));
@@ -116,9 +114,8 @@ describe('FieldMask', () => {
 		});
 
 		it('returns exclude mask from exclude mask and include mask', function () {
-			const left = FieldMask.from({ foo: 0, bar: 0 });
-			const right = FieldMask.from({ bar: 1, baz: 1 });
-			const result = left.join(right);
+			const mask = FieldMask.from({ foo: 0, bar: 0 });
+			const result = mask.join({ bar: 1, baz: 1 });
 			expect(result.type).to.equal(FieldMaskType.Exclude);
 			expect(result).to.satisfy(r => !r.includes('foo'));
 			expect(result).to.satisfy(r => r.includes('bar'));
@@ -126,9 +123,8 @@ describe('FieldMask', () => {
 		});
 
 		it('returns exclude mask from exclude mask and exclude mask', function () {
-			const left = FieldMask.from({ foo: 0 });
-			const right = FieldMask.from({ foo: 0, bar: 0 });
-			const result = left.join(right);
+			const mask = FieldMask.from({ foo: 0 });
+			const result = mask.join({ foo: 0, bar: 0 });
 			expect(result.type).to.equal(FieldMaskType.Exclude);
 			expect(result).to.satisfy(r => !r.includes('foo'));
 			expect(result).to.satisfy(r => r.includes('bar'));
@@ -137,9 +133,8 @@ describe('FieldMask', () => {
 
 	describe('intersect', () => {
 		it('returns include mask from include mask and include mask', function () {
-			const left = FieldMask.from({ foo: 1, bar: 1 });
-			const right = FieldMask.from({ bar: 1, baz: 1 });
-			const result = left.intersect(right);
+			const mask = FieldMask.from({ foo: 1, bar: 1 });
+			const result = mask.intersect({ bar: 1, baz: 1 });
 			expect(result.type).to.equal(FieldMaskType.Include);
 			expect(result).to.satisfy(r => !r.includes('foo'));
 			expect(result).to.satisfy(r => r.includes('bar'));
@@ -147,9 +142,8 @@ describe('FieldMask', () => {
 		});
 
 		it('returns include mask from include mask and exclude mask', function () {
-			const left = FieldMask.from({ foo: 1, bar: 1 });
-			const right = FieldMask.from({ bar: 0, baz: 0 });
-			const result = left.intersect(right);
+			const mask = FieldMask.from({ foo: 1, bar: 1 });
+			const result = mask.intersect({ bar: 0, baz: 0 });
 			expect(result.type).to.equal(FieldMaskType.Include);
 			expect(result).to.satisfy(r => r.includes('foo'));
 			expect(result).to.satisfy(r => !r.includes('bar'));
@@ -157,9 +151,8 @@ describe('FieldMask', () => {
 		});
 
 		it('returns exclude mask from exclude mask and include mask', function () {
-			const left = FieldMask.from({ foo: 0, bar: 0 });
-			const right = FieldMask.from({ bar: 1, baz: 1 });
-			const result = left.intersect(right);
+			const mask = FieldMask.from({ foo: 0, bar: 0 });
+			const result = mask.intersect({ bar: 1, baz: 1 });
 			expect(result.type).to.equal(FieldMaskType.Exclude);
 			expect(result).to.satisfy(r => !r.includes('foo'));
 			expect(result).to.satisfy(r => !r.includes('bar'));
@@ -167,9 +160,8 @@ describe('FieldMask', () => {
 		});
 
 		it('returns exclude mask from exclude mask and exclude mask', function () {
-			const left = FieldMask.from({ foo: 0, bar: 0 });
-			const right = FieldMask.from({ bar: 0, baz: 0 });
-			const result = left.intersect(right);
+			const mask = FieldMask.from({ foo: 0, bar: 0 });
+			const result = mask.intersect({ bar: 0, baz: 0 });
 			expect(result.type).to.equal(FieldMaskType.Exclude);
 			expect(result).to.satisfy(r => !r.includes('foo'));
 			expect(result).to.satisfy(r => !r.includes('bar'));
