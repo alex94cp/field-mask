@@ -2,21 +2,31 @@ export enum FieldMaskType {
 	Exclude, Include
 }
 
-export type FieldMaskFrom<T extends string> = FieldMask<T> | Record<T, any> | T[]
+export type FieldMaskFrom<T extends string> = FieldMask<T> | Record<T, any> | Iterable<T>;
 
 export class FieldMask<K extends string> {
-	private _entries: K[] = [];
+	private _entries: Set<K> = new Set;
 
 	constructor(public type =  FieldMaskType.Include) {
 	}
 
-	static from<T extends string>(from: FieldMaskFrom<T>): FieldMask<T> {
+	static exclude<K extends string>(excluded: Iterable<K>): FieldMask<K> {
+		const mask = new FieldMask<K>(FieldMaskType.Exclude);
+		mask.add(...excluded);
+		return mask;
+	}
+
+	static include<K extends string>(included: Iterable<K>): FieldMask<K> {
+		const mask = new FieldMask<K>(FieldMaskType.Include);
+		mask.add(...included);
+		return mask;
+	}
+
+	static from<K extends string>(from: FieldMaskFrom<K>): FieldMask<K> {
 		if (from instanceof FieldMask) {
 			return from;
 		} else if (Array.isArray(from)) {
-			const mask = new FieldMask<T>();
-			mask.add(...from);
-			return mask;
+			return FieldMask.include<K>(from);
 		} else {
 			let maskType = undefined;
 			for (const v of Object.values(from)) {
@@ -27,58 +37,50 @@ export class FieldMask<K extends string> {
 			}
 			if (maskType === undefined)
 				maskType = FieldMaskType.Include;
-			const mask = new FieldMask<T>(maskType);
-			mask.add(...Object.keys(from) as T[]);
+			const mask = new FieldMask<K>(maskType);
+			mask.add(...Object.keys(from) as K[]);
 			return mask;
 		}
 	}
 
 	add(...fields: K[]): void {
-		for (const f of fields) {
-			if (!this._entries.includes(f))
-				this._entries.push(f);
-		}
+		fields.forEach(f => this._entries.add(f));
 	}
 
 	get(): Record<K, 0 | 1> {
-		return this._entries.reduce((result, f) => {
+		const result = {} as Record<K, 0 | 1>;
+		this._entries.forEach(f => {
 			result[f] = this.type;
-			return result;
-		}, {} as Record<K, 0 | 1>);
+		});
+		return result;
 	}
 
 	includes(field: K): boolean | undefined {
 		switch (this.type) {
 			case FieldMaskType.Exclude:
-				return !this._entries.includes(field);
+				return !this._entries.has(field);
 			case FieldMaskType.Include:
-				return this._entries.includes(field);
+				return this._entries.has(field);
 		}
 	}
 
 	negate(): FieldMask<K> {
 		switch (this.type) {
 			case FieldMaskType.Exclude:
-				const includeMask = new FieldMask<K>(FieldMaskType.Include);
-				includeMask.add(...this._entries);
-				return includeMask;
+				return FieldMask.include(this._entries);
 			case FieldMaskType.Include:
-				const excludeMask = new FieldMask<K>(FieldMaskType.Exclude);
-				excludeMask.add(...this._entries);
-				return excludeMask;
+				return FieldMask.exclude(this._entries);
 		}
 	}
 
 	join(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
+		const entries = [...this._entries];
 		const other = FieldMask.from<K>(otherFrom);
 		switch (this.type) {
 			case FieldMaskType.Exclude:
-				const excludeMask = new FieldMask<K>(FieldMaskType.Exclude);
-				excludeMask.add(...this._entries.filter(f => !other.includes(f)));
-				return excludeMask;
+				return FieldMask.exclude(entries.filter(f => !other.includes(f)));
 			case FieldMaskType.Include:
-				const includeMask = new FieldMask<K>(FieldMaskType.Include);
-				includeMask.add(...this._entries);
+				const includeMask = FieldMask.include(entries);
 				if (other.type === FieldMaskType.Include)
 					includeMask.add(...other._entries);
 				return includeMask;
@@ -86,18 +88,35 @@ export class FieldMask<K extends string> {
 	}
 
 	intersect(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
+		const entries = [...this._entries];
 		const other = FieldMask.from(otherFrom);
 		switch (this.type) {
 			case FieldMaskType.Exclude:
-				const excludeMask = new FieldMask<K>(FieldMaskType.Exclude);
-				excludeMask.add(...this._entries);
+				const excludeMask = FieldMask.exclude(entries);
 				if (other.type === FieldMaskType.Exclude)
 					excludeMask.add(...other._entries);
 				return excludeMask;
 			case FieldMaskType.Include:
-				const includeMask = new FieldMask<K>(FieldMaskType.Include);
-				includeMask.add(...this._entries.filter(f => other.includes(f)));
-				return includeMask;
+				return FieldMask.include(entries.filter(f => other.includes(f)));
 		}
+	}
+
+	apply<T extends Record<K, any>>(o: T): Pick<T, K> {
+		const result = {} as Pick<T, K>;
+		switch (this.type) {
+			case FieldMaskType.Exclude:
+				for (const [k, v] of Object.entries(o)) {
+					if (!this._entries.has(k as K))
+						result[k as K] = v;
+				}
+				break;
+			case FieldMaskType.Include:
+				for (const [k, v] of Object.entries(o)) {
+					if (this._entries.has(k as K))
+						result[k as K] = v;
+				}
+				break;
+		}
+		return result;
 	}
 }
