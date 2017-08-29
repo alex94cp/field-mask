@@ -69,23 +69,45 @@ describe('FieldMask', () => {
 
 	describe('includes', () => {
 		it('returns true if field is included in include mask', function () {
-			const mask = FieldMask.from({ foo: 1 });
+			const mask = FieldMask.include(['foo']);
 			expect(mask.includes('foo')).to.be.true;
 		});
 
 		it('returns true if field is not included in exclude mask', function () {
-			const mask = FieldMask.from({ foo: 0 });
+			const mask = FieldMask.exclude(['foo']);
 			expect(mask.includes('bar')).to.be.true;
 		});
 
 		it('returns false if field is not included in include mask', function () {
-			const mask = FieldMask.from({ foo: 1 });
+			const mask = FieldMask.include(['foo']);
 			expect(mask.includes('bar')).to.be.false;
 		});
 
 		it('returns false if field is included in exclude mask', function () {
-			const mask = FieldMask.from({ foo: 0 });
+			const mask = FieldMask.exclude(['foo']);
 			expect(mask.includes('foo')).to.be.false;
+		});
+	});
+
+	describe('excludes', () => {
+		it('returns false if field is included in include mask', function () {
+			const mask = FieldMask.include(['foo']);
+			expect(mask.excludes('foo')).to.be.false;
+		});
+
+		it('returns false if field is not included in exclude mask', function () {
+			const mask = FieldMask.exclude(['foo']);
+			expect(mask.excludes('bar')).to.be.false;
+		});
+
+		it('returns true if field is not included in include mask', function () {
+			const mask = FieldMask.include(['foo']);
+			expect(mask.excludes('bar')).to.be.true;
+		});
+
+		it('returns true if field is included in exclude mask', function () {
+			const mask = FieldMask.exclude(['foo']);
+			expect(mask.excludes('foo')).to.be.true;
 		});
 	});
 

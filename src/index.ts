@@ -55,12 +55,21 @@ export class FieldMask<K extends string> {
 		return result;
 	}
 
-	includes(field: K): boolean | undefined {
+	includes(field: K): boolean {
 		switch (this.type) {
 			case FieldMaskType.Exclude:
 				return !this._entries.has(field);
 			case FieldMaskType.Include:
 				return this._entries.has(field);
+		}
+	}
+
+	excludes(field: K): boolean {
+		switch (this.type) {
+			case FieldMaskType.Exclude:
+				return this._entries.has(field);
+			case FieldMaskType.Include:
+				return !this._entries.has(field);
 		}
 	}
 
