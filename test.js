@@ -55,9 +55,9 @@ describe('FieldMask', () => {
 			expect(mask.type).to.equal(FieldMaskType.Exclude);
 		});
 
-		it('returns empty exclude mask from empty object', function () {
+		it('returns empty include mask from empty object', function () {
 			const mask = FieldMask.from({});
-			expect(mask.type).to.equal(FieldMaskType.Exclude);
+			expect(mask.type).to.equal(FieldMaskType.Include);
 		});
 
 		it('throws if object has mixed values', function () {
