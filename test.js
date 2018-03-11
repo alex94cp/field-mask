@@ -1,6 +1,6 @@
 const {expect} = require('chai');
 
-const {FieldMask, FieldMaskType} = require('./');
+const {FieldMask, FieldMaskType} = require('.');
 
 describe('FieldMask', () => {
 	describe('include', () => {

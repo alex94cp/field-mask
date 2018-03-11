@@ -2,7 +2,9 @@ export enum FieldMaskType {
 	Exclude, Include
 }
 
-export type FieldMaskFrom<T extends string> = FieldMask<T> | Record<T, any> | Iterable<T>;
+export type FieldMaskConvertible<T extends string> = Iterable<T>
+                                                   | Record<T, any>
+                                                   | FieldMask<T>;
 
 export class FieldMask<K extends string> {
 	private _entries: Set<K> = new Set;
@@ -22,7 +24,7 @@ export class FieldMask<K extends string> {
 		return mask;
 	}
 
-	static from<K extends string>(from: FieldMaskFrom<K>): FieldMask<K> {
+	static from<K extends string>(from: FieldMaskConvertible<K>): FieldMask<K> {
 		if (from instanceof FieldMask) {
 			return from;
 		} else if (Array.isArray(from)) {
@@ -80,7 +82,7 @@ export class FieldMask<K extends string> {
 		}
 	}
 
-	join(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
+	join(otherFrom: FieldMaskConvertible<K>): FieldMask<K> {
 		const entries = [...this._entries];
 		const other = FieldMask.from<K>(otherFrom);
 		switch (this.type) {
@@ -94,7 +96,7 @@ export class FieldMask<K extends string> {
 		}
 	}
 
-	intersect(otherFrom: FieldMaskFrom<K>): FieldMask<K> {
+	intersect(otherFrom: FieldMaskConvertible<K>): FieldMask<K> {
 		const entries = [...this._entries];
 		const other = FieldMask.from(otherFrom);
 		switch (this.type) {

@@ -1,7 +1,6 @@
 {
-	"exclude": [
-		"dist",
-		"node_modules"
+	"include": [
+		"index.ts"
 	],
 	"compilerOptions": {
 		"target": "es6",
