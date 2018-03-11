@@ -1,5 +1,5 @@
 {
-	"include": [
+	"files": [
 		"index.ts"
 	],
 	"compilerOptions": {
