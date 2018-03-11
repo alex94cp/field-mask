@@ -37,6 +37,7 @@ export class FieldMask<K extends string> {
 				else if (v != maskType)
 					throw new Error('Invalid field mask object');
 			}
+			maskType = maskType || FieldMaskType.Exclude;
 			const mask = new FieldMask<K>(maskType);
 			mask.add(...Object.keys(from) as K[]);
 			return mask;
