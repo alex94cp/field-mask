@@ -1,5 +1,6 @@
 export enum FieldMaskType {
-	Exclude, Include
+	Exclude = 'exclude',
+	Include = 'include',
 }
 
 export type FieldMaskConvertible<T extends string> = Iterable<T>
@@ -9,7 +10,7 @@ export type FieldMaskConvertible<T extends string> = Iterable<T>
 export class FieldMask<K extends string> {
 	private _entries: Set<K> = new Set;
 
-	constructor(public type =  FieldMaskType.Include) {
+	constructor(public type = FieldMaskType.Include) {
 	}
 
 	static exclude<K extends string>(excluded: Iterable<K>): FieldMask<K> {
@@ -32,10 +33,13 @@ export class FieldMask<K extends string> {
 		} else {
 			let maskType = undefined;
 			for (const v of Object.values(from)) {
-				if (maskType === undefined)
-					maskType = v;
-				else if (v != maskType)
+				if (maskType === undefined) {
+					maskType = v ? FieldMaskType.Include
+					             : FieldMaskType.Exclude;
+				} else if ((maskType === FieldMaskType.Exclude && v !== 0) ||
+				           (maskType === FieldMaskType.Include && v !== 1)) {
 					throw new Error('Invalid field mask object');
+				}
 			}
 			maskType = maskType || FieldMaskType.Exclude;
 			const mask = new FieldMask<K>(maskType);
@@ -51,7 +55,10 @@ export class FieldMask<K extends string> {
 	get(): Record<K, 0 | 1> {
 		const result = {} as Record<K, 0 | 1>;
 		this._entries.forEach(f => {
-			result[f] = this.type;
+			switch (this.type) {
+			case FieldMaskType.Exclude: result[f] = 0; break;
+			case FieldMaskType.Include: result[f] = 1; break;
+			}
 		});
 		return result;
 	}
