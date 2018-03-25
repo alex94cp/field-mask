@@ -81,6 +81,20 @@ export class FieldMask<K extends string> {
 		}
 	}
 
+	equals(other: FieldMaskConvertible<K>): boolean {
+		const otherMask = FieldMask.from(other);
+		if (this.type !== otherMask.type) return false;
+		for (const field of this._entries) {
+			if (!otherMask._entries.has(field))
+				return false;
+		}
+		for (const field of otherMask._entries) {
+			if (!this._entries.has(field))
+				return false;
+		}
+		return true;
+	}
+
 	negate(): FieldMask<K> {
 		switch (this.type) {
 			case FieldMaskType.Exclude:

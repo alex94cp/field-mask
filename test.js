@@ -116,6 +116,26 @@ describe('FieldMask', () => {
 		});
 	});
 
+	describe('equals', () => {
+		it('returns false if field masks have different types', function () {
+			const mask = FieldMask.include(['foo']);
+			const other = FieldMask.exclude(['foo']);
+			expect(mask.equals(other)).to.be.false;
+		});
+
+		it('returns false if field masks have different fields', function () {
+			const mask = FieldMask.include(['foo']);
+			const other = FieldMask.include(['bar']);
+			expect(mask.equals(other)).to.be.false;
+		});
+
+		it('returns true if field have same type and fields', function () {
+			const mask = FieldMask.include(['foo']);
+			const other = FieldMask.include(['foo']);
+			expect(mask.equals(other)).to.be.true;
+		});
+	});
+
 	describe('get', () => {
 		it('returns object with all included fields set to 1 from include mask', function () {
 			const result = FieldMask.include(['foo', 'bar', 'baz']).get();
